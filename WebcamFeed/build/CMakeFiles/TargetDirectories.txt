@@ -1,0 +1,4 @@
+/home/nate/ras/img-proc/WebcamFeed/build/CMakeFiles/rebuild_cache.dir
+/home/nate/ras/img-proc/WebcamFeed/build/CMakeFiles/edit_cache.dir
+/home/nate/ras/img-proc/WebcamFeed/build/CMakeFiles/face_detect.dir
+/home/nate/ras/img-proc/WebcamFeed/build/CMakeFiles/read_vid_stream.dir
