@@ -6,6 +6,6 @@ find_package( OpenCV REQUIRED )
 include_directories( OpenCV REQUIRED )
 
 ## Executable
-add_executable(read_vid_stream src/read_vid_stream.cpp)
-add_executable(face_detect src/face_detect.cpp)
+add_executable(read_vid_stream src/read_vid_stream.cc)
+
 target_link_libraries(read_vid_stream ${OpenCV_LIBS})

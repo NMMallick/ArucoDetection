@@ -1,3 +1,0 @@
-/home/nate/ras/img-proc/ArucoBoardGeneration/build/CMakeFiles/rebuild_cache.dir
-/home/nate/ras/img-proc/ArucoBoardGeneration/build/CMakeFiles/edit_cache.dir
-/home/nate/ras/img-proc/ArucoBoardGeneration/build/CMakeFiles/generate_board.dir
