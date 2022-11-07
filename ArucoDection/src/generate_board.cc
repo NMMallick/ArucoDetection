@@ -25,7 +25,8 @@ namespace {
 
 
 
-void drawBoard(cv::Ptr<cv::aruco::CharucoBoard> board, cv::Size imgSize, int margins, int borderBits)
+void drawBoard(cv::Ptr<cv::aruco::CharucoBoard> board, cv::Size imgSize,
+                int margins, int borderBits, std::string output)
 {
     cv::Mat boardImage;
     std::cout << imgSize.area() << std::endl;
@@ -34,12 +35,13 @@ void drawBoard(cv::Ptr<cv::aruco::CharucoBoard> board, cv::Size imgSize, int mar
     // Display image
     cv::namedWindow("Display Grid", cv::WINDOW_AUTOSIZE);
     cv::imshow("Display Grid", boardImage);
-    // cv::imwrite("../imgs/grid.jpg", boardImage);
+    cv::imwrite(output, boardImage);
 
     cv::waitKey(0);
 }
 
-void drawBoard(cv::Ptr<cv::aruco::GridBoard> board, cv::Size imgSize, int margins, int borderBits)
+void drawBoard(cv::Ptr<cv::aruco::GridBoard> board, cv::Size imgSize,
+                int margins, int borderBits, std::string output)
 {
     cv::Mat boardImage;
     board->draw(imgSize, boardImage, margins, borderBits);
@@ -47,7 +49,7 @@ void drawBoard(cv::Ptr<cv::aruco::GridBoard> board, cv::Size imgSize, int margin
     // Display image
     cv::namedWindow("Display Grid", cv::WINDOW_AUTOSIZE);
     cv::imshow("Display Grid", boardImage);
-    // cv::imwrite("../imgs/grid.jpg", boardImage);
+    cv::imwrite(output, boardImage);
 
     cv::waitKey(0);
 }
@@ -83,7 +85,7 @@ int main(int argc, char **argv)
     int showImage = parser.get<bool>("si");
 
     std::string out = parser.get<std::string>(0);
-
+    std::cout << out << std::endl;
     if (!parser.check())
     {
         parser.printErrors();
@@ -116,10 +118,6 @@ int main(int argc, char **argv)
     cv::Size  imageSize;
     imageSize.width = squaresX * squareLength + 2 * margins;
     imageSize.height = squaresY * squareLength + 2 * margins;
-    std::cout << "Width: " << squaresX * squareLength + 2 * margins << std::endl;
-    std::cout << "Height: " << squaresY * squareLength + 2 * margins << std::endl;
-    // std::cout << "Square Length: " << squareLength << std::endl;
-    std::cout << "Image size: " << imageSize.area() << std::endl;
 
     // Base class for all boards (GridBoard, ChArUco, ...)
     cv::Ptr<cv::aruco::Board> board;
@@ -130,12 +128,12 @@ int main(int argc, char **argv)
                                                 squareLength,
                                                 markerLength,
                                                 dictionary);
-        drawBoard(board.staticCast<cv::aruco::CharucoBoard>(), imageSize, margins, borderBits);
+        drawBoard(board.staticCast<cv::aruco::CharucoBoard>(), imageSize, margins, borderBits, out);
     }
     else
     {
         board = cv::aruco::GridBoard::create(5,7,0.04, 0.01, dictionary);
-        drawBoard(board.staticCast<cv::aruco::GridBoard>(), imageSize, margins, borderBits);
+        drawBoard(board.staticCast<cv::aruco::GridBoard>(), imageSize, margins, borderBits, out);
     }
 
 
