@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     // Configure video input
     cv::VideoCapture inputVideo;
-    inputVideo.open(2);
+    inputVideo.open(0);
 
     // Get predefined dictionary
     cv::Ptr<cv::aruco::Dictionary> dictionary
