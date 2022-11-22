@@ -6,6 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 
+#include <ArucoUtils.hh>
+
 #include <vector>
 #include <iostream>
 
@@ -18,7 +20,6 @@ const char* about =
         "  To finish capturing, press 'ESC' key and calibration starts.\n";
 
 // Keys for commandline parser
-// TODO: this might be changed for more a custom application
 const char* keys  =
         "{w        |       | Number of squares in X direction }"
         "{h        |       | Number of squares in Y direction }"
@@ -38,51 +39,6 @@ const char* keys  =
         "{a        |       | Fix aspect ratio (fx/fy) to this value }"
         "{pc       | false | Fix the principal point at the center }"
         "{sc       | false | Show detected chessboard corners after calibration }";
-
-
-
-inline static bool readCameraParameters(std::string filename, cv::Mat &camMatrix, cv::Mat &distCoeffs) {
-    cv::FileStorage fs(filename, cv::FileStorage::READ);
-    if (!fs.isOpened())
-        return false;
-    fs["camera_matrix"] >> camMatrix;
-    fs["distortion_coefficients"] >> distCoeffs;
-    return true;
-}
-
-inline static bool saveCameraParams(const std::string &filename, cv::Size imageSize, float aspectRatio, int flags,
-                                    const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs, double totalAvgErr) {
-    cv::FileStorage fs(filename, cv::FileStorage::WRITE);
-    if (!fs.isOpened())
-        return false;
-
-    time_t tt;
-    time(&tt);
-    struct tm *t2 = localtime(&tt);
-    char buf[1024];
-    strftime(buf, sizeof(buf) - 1, "%c", t2);
-
-    fs << "calibration_time" << buf;
-    fs << "image_width" << imageSize.width;
-    fs << "image_height" << imageSize.height;
-
-    if (flags & cv::CALIB_FIX_ASPECT_RATIO) fs << "aspectRatio" << aspectRatio;
-
-    if (flags != 0) {
-        sprintf(buf, "flags: %s%s%s%s",
-                flags & cv::CALIB_USE_INTRINSIC_GUESS ? "+use_intrinsic_guess" : "",
-                flags & cv::CALIB_FIX_ASPECT_RATIO ? "+fix_aspectRatio" : "",
-                flags & cv::CALIB_FIX_PRINCIPAL_POINT ? "+fix_principal_point" : "",
-                flags & cv::CALIB_ZERO_TANGENT_DIST ? "+zero_tangent_dist" : "");
-    }
-    fs << "flags" << flags;
-    fs << "camera_matrix" << cameraMatrix;
-    fs << "distortion_coefficients" << distCoeffs;
-    fs << "avg_reprojection_error" << totalAvgErr;
-    return true;
-
-}
-
 }
 
 int main(int argc, char **argv)
@@ -210,8 +166,6 @@ int main(int argc, char **argv)
                         cv::Point(10, 20), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0 , 0), 2);
 
         cv::imshow("out", imageCopy);
-
-        std::cout << "am i looping" << std::endl;
 
         char key = (char)cv::waitKey(waitTime);
         if (key == 27)

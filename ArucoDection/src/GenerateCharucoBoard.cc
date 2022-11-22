@@ -132,7 +132,10 @@ int main(int argc, char **argv)
     }
     else
     {
-        board = cv::aruco::GridBoard::create(5,7,0.04, 0.01, dictionary);
+        board = cv::aruco::GridBoard::create(squaresX, squaresY,
+                                                squareLength,
+                                                markerLength,
+                                                dictionary);
         drawBoard(board.staticCast<cv::aruco::GridBoard>(), imageSize, margins, borderBits, out);
     }
 

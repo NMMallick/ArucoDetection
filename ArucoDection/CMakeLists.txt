@@ -5,6 +5,7 @@ project( ArucoBoardGeneration )
 find_package( OpenCV REQUIRED )
 
 include_directories( OpenCV REQUIRED )
+include_directories(include)
 
 add_executable(generate_board src/GenerateCharucoBoard.cc)
 add_executable(detect_tags src/DetectTags.cc)
