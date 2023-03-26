@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     inputVideo.open(0);
 
     // Get predefined dictionary
-    cv::Ptr<cv::aruco::Dictionary> dictionary
+    cv::aruco::Dictionary dictionary
         = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 
     while (inputVideo.grab())
@@ -24,7 +24,7 @@ int main(int argc, char **argv)
         // Vec to store ids
         std::vector<int> ids;
         std::vector<std::vector<cv::Point2f>> corners;
-        cv::aruco::detectMarkers(image, dictionary, corners, ids);
+        cv::aruco::detectMarkers(image, cv::makePtr<cv::aruco::Dictionary>(dictionary), corners, ids);
 
         // if at least one marker detected
         if (ids.size() > 0)

@@ -77,7 +77,7 @@ int main(int argc, char **argv)
         calibrationFlags |= cv::CALIB_FIX_PRINCIPAL_POINT;
 
     // Detector Parameters not working in sample???
-    cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
+    cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::makePtr<cv::aruco::DetectorParameters>();
     // if(parser.has("dp")) {
     //     cv::FileStorage fs(parser.get<std::string>("dp"), cv::FileStorage::READ);
     //     bool readOk = detectorParams->readDetectorParameters(fs.root());
@@ -114,11 +114,11 @@ int main(int argc, char **argv)
         waitTime = 10;
     }
 
-    cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(0);
+    cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(0);
     if (parser.has("d"))
     {
         int dictionaryId = parser.get<int>("d");
-        dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+        dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PredefinedDictionaryType(dictionaryId));
     } else
     {
         std::cerr << "Dictionary not specified" << std::endl;
@@ -127,7 +127,7 @@ int main(int argc, char **argv)
 
     // create charuco board object
     cv::Ptr<cv::aruco::CharucoBoard> charucoboard =
-        cv::aruco::CharucoBoard::create(squaresX, squaresY, squareLength, markerLength, dictionary);
+        new cv::aruco::CharucoBoard(cv::Size(squaresX, squaresY), squareLength, markerLength, dictionary);
     cv::Ptr<cv::aruco::Board> board = charucoboard.staticCast<cv::aruco::Board>();
 
     // collect data from each fram
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
         std::vector<std::vector<cv::Point2f>> corners, rejected;
 
         // detect markers
-        cv::aruco::detectMarkers(image, dictionary, corners, ids, detectorParams, rejected);
+        cv::aruco::detectMarkers(image, cv::makePtr<cv::aruco::Dictionary>(dictionary), corners, ids, detectorParams, rejected);
 
         // refind strategy to detect more markers
         if (refindStrategy)

@@ -25,12 +25,11 @@ namespace {
 
 
 
-void drawBoard(cv::Ptr<cv::aruco::CharucoBoard> board, cv::Size imgSize,
+void drawBoard(cv::aruco::CharucoBoard board, cv::Size imgSize,
                 int margins, int borderBits, std::string output)
 {
     cv::Mat boardImage;
-    std::cout << imgSize.area() << std::endl;
-    board->draw(imgSize, boardImage, margins, borderBits);
+    board.generateImage(imgSize, boardImage, margins, borderBits);
 
     // Display image
     cv::namedWindow("Display Grid", cv::WINDOW_AUTOSIZE);
@@ -40,11 +39,11 @@ void drawBoard(cv::Ptr<cv::aruco::CharucoBoard> board, cv::Size imgSize,
     cv::waitKey(0);
 }
 
-void drawBoard(cv::Ptr<cv::aruco::GridBoard> board, cv::Size imgSize,
+void drawBoard(cv::aruco::GridBoard board, cv::Size imgSize,
                 int margins, int borderBits, std::string output)
 {
     cv::Mat boardImage;
-    board->draw(imgSize, boardImage, margins, borderBits);
+    board.generateImage(imgSize, boardImage, margins, borderBits);
 
     // Display image
     cv::namedWindow("Display Grid", cv::WINDOW_AUTOSIZE);
@@ -93,13 +92,12 @@ int main(int argc, char **argv)
     }
 
     // Create a dictionary
-    cv::Ptr<cv::aruco::Dictionary> dictionary
-        = cv::aruco::getPredefinedDictionary(0);
+    cv::aruco::Dictionary dictionary = cv::aruco::getPredefinedDictionary(0);
 
     if (parser.has("d"))
     {
         auto dictionaryId = parser.get<int>("d");
-        dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME(dictionaryId));
+        dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PredefinedDictionaryType(dictionaryId));
     }
     // TODO : The cv::aruco::Dictionary::readDictionary() function does not exist.
     //          Need to find an alternative to reading custom dictionaries
@@ -120,23 +118,22 @@ int main(int argc, char **argv)
     imageSize.height = squaresY * squareLength + 2 * margins;
 
     // Base class for all boards (GridBoard, ChArUco, ...)
-    cv::Ptr<cv::aruco::Board> board;
 
     if (genChArUco)
     {
-        board = cv::aruco::CharucoBoard::create(squaresX, squaresY,
+        cv::aruco::CharucoBoard board(cv::Size(squaresX, squaresY),
                                                 squareLength,
                                                 markerLength,
                                                 dictionary);
-        drawBoard(board.staticCast<cv::aruco::CharucoBoard>(), imageSize, margins, borderBits, out);
+        drawBoard(board, imageSize, margins, borderBits, out);
     }
     else
     {
-        board = cv::aruco::GridBoard::create(squaresX, squaresY,
+        cv::aruco::GridBoard board(cv::Size(squaresX, squaresY),
                                                 squareLength,
                                                 markerLength,
                                                 dictionary);
-        drawBoard(board.staticCast<cv::aruco::GridBoard>(), imageSize, margins, borderBits, out);
+        drawBoard(board, imageSize, margins, borderBits, out);
     }
 
 
