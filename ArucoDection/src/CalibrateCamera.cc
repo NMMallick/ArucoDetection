@@ -1,5 +1,8 @@
-// #include <opencv2/highgui.hpp>
-// #include <opencv2/calib3d.hpp>
+#include <termios.h>
+#include <stdio.h>
+#include <signal.h>
+#include <unistd.h>
+
 #include <opencv2/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/aruco/charuco.hpp>
@@ -38,7 +41,15 @@ const char* keys  =
         "{zt       | false | Assume zero tangential distortion }"
         "{a        |       | Fix aspect ratio (fx/fy) to this value }"
         "{pc       | false | Fix the principal point at the center }"
-        "{sc       | false | Show detected chessboard corners after calibration }";
+        "{sc       | false | Show detected chessboard corners after calibration }"
+        "{hl       | false | Headless platform }";
+}
+
+static volatile sig_atomic_t done = 0;
+
+void handlr(int sig)
+{
+    done = 1;
 }
 
 int main(int argc, char **argv)
@@ -52,7 +63,23 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    int headless = parser.get<int>("hl");
 
+    // Terminal Interface Properties
+    static struct termios curr_t, new_t;
+    struct sigaction act;
+    if (headless)
+    {
+        tcgetattr(STDIN_FILENO, &curr_t);
+        new_t = curr_t;
+        new_t.c_lflag &= ~ICANON;
+        tcsetattr(STDIN_FILENO, 0, &new_t);
+
+        act.sa_handler = handlr;
+        sigaction(SIGINT, &act, NULL);
+    }
+
+    // Parse commandline input
     int squaresX = parser.get<int>("w");
     int squaresY = parser.get<int>("h");
     float squareLength = parser.get<float>("sl");
@@ -78,14 +105,6 @@ int main(int argc, char **argv)
 
     // Detector Parameters not working in sample???
     cv::Ptr<cv::aruco::DetectorParameters> detectorParams = cv::makePtr<cv::aruco::DetectorParameters>();
-    // if(parser.has("dp")) {
-    //     cv::FileStorage fs(parser.get<std::string>("dp"), cv::FileStorage::READ);
-    //     bool readOk = detectorParams->readDetectorParameters(fs.root());
-    //     if(!readOk) {
-    //         std::cerr << "Invalid detector parameters file" << std::endl;
-    //         return 0;
-    //     }
-    // }
 
     bool refindStrategy = parser.get<bool>("rs");
     int camId = parser.get<int>("ci");
@@ -137,7 +156,7 @@ int main(int argc, char **argv)
     cv::Size imgSize;
 
     // Capture video input
-    while (inputVideo.grab())
+    while (inputVideo.grab() && !done)
     {
         cv::Mat image, imageCopy;
         inputVideo.retrieve(image);
@@ -167,7 +186,12 @@ int main(int argc, char **argv)
 
         cv::imshow("out", imageCopy);
 
-        char key = (char)cv::waitKey(waitTime);
+        char key;
+        if (headless)
+            key = getchar();
+        else
+            key = (char)cv::waitKey(waitTime);
+
         if (key == 27)
             break;
 
