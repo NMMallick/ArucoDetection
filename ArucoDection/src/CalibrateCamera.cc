@@ -176,15 +176,16 @@ int main(int argc, char **argv)
         if (ids.size() > 0)
             cv::aruco::interpolateCornersCharuco(corners, ids, image, charucoboard, currentCharucoCorners, currentCharucoIds);
 
-        // draw results
-        image.copyTo(imageCopy);
-        if (ids.size() > 0 )
-            cv::aruco::drawDetectedCornersCharuco(imageCopy, currentCharucoCorners, currentCharucoIds);
-
-        cv::putText(imageCopy, "Press 'c' to add current frame. 'ESC' to finish and calibrate",
+        if (!headless)
+        {
+            // draw results
+            image.copyTo(imageCopy);
+            if (ids.size() > 0 )
+                cv::aruco::drawDetectedCornersCharuco(imageCopy, currentCharucoCorners, currentCharucoIds);
+            cv::putText(imageCopy, "Press 'c' to add current frame. 'ESC' to finish and calibrate",
                         cv::Point(10, 20), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 0 , 0), 2);
-
-        cv::imshow("out", imageCopy);
+            cv::imshow("out", imageCopy);
+        }
 
         char key;
         if (headless)
