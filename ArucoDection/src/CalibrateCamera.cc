@@ -156,7 +156,7 @@ int main(int argc, char **argv)
     cv::Size imgSize;
 
     // Capture video input
-    while (inputVideo.grab() && !done)
+    while (inputVideo.grab())
     {
         cv::Mat image, imageCopy;
         inputVideo.retrieve(image);
