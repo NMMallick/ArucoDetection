@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    int headless = parser.get<int>("hl");
+    int headless = parser.get<bool>("hl");
 
     // Terminal Interface Properties
     static struct termios curr_t, new_t;
