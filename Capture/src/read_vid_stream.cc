@@ -1,5 +1,5 @@
-#include<opencv2/opencv.hpp>//OpenCV header to use VideoCapture class//
-#include<iostream>
+#include <opencv2/opencv.hpp>//OpenCV header to use VideoCapture class//
+#include <iostream>
 
 using namespace std;
 using namespace cv;
